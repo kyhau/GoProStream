@@ -3,6 +3,7 @@
 ## By @Sonof8Bits and @KonradIT
 ##
 ## WOL touch by @5perseo, code updated by @podfish
+## Code updated by kyhau on 2020-04-01.
 ##
 ## 1. Connect your desktop or laptop to your GoPro via WIFI.
 ## 2. Set the parameters below.
@@ -31,6 +32,7 @@ import json
 import re
 import http
 
+
 def get_command_msg(id):
 	return "_GPHD_:%u:%u:%d:%1lf\n" % (0, 0, 2, 0)
 
@@ -44,7 +46,7 @@ RECORD=False
 SAVE=False
 SAVE_FILENAME="goprofeed3"
 SAVE_FORMAT="ts"
-SAVE_LOCATION="/tmp/"
+SAVE_LOCATION=""
 ## for wake_on_lan
 GOPRO_IP = '10.5.5.9'
 GOPRO_MAC = 'DEADBEEF0000'
@@ -59,7 +61,7 @@ def gopro_live():
 	MESSAGE = get_command_msg(KEEP_ALIVE_CMD)
 	URL = "http://10.5.5.9:8080/live/amba.m3u8"
 	try:
-        # original code - response_raw = urllib.request.urlopen('http://10.5.5.9/gp/gpControl').read().decode('utf-8')
+		# original code - response_raw = urllib.request.urlopen('http://10.5.5.9/gp/gpControl').read().decode('utf-8')
 		response_raw = urlopen('http://10.5.5.9/gp/gpControl').read().decode('utf-8')
 		jsondata=json.loads(response_raw)
 		response=jsondata["info"]["firmware_version"]
@@ -107,7 +109,7 @@ def gopro_live():
 			print("Recording locally: " + str(SAVE))
 			print("Recording stored in: " + SAVELOCATION)
 			print("Note: Preview is not available when saving the stream.")
-			subprocess.Popen("ffmpeg -i 'udp://10.5.5.100:8554' -fflags nobuffer -f:v mpegts -probesize 8192 " + TS_PARAMS + SAVELOCATION, shell=True)
+			subprocess.Popen('ffmpeg -i "udp://10.5.5.100:8554" -fflags nobuffer -f:v mpegts -probesize 8192 ' + TS_PARAMS + SAVELOCATION, shell=True)
 		if sys.version_info.major >= 3:
 			MESSAGE = bytes(MESSAGE, "utf-8")
 		print("Press ctrl+C to quit this application.\n")
@@ -126,10 +128,12 @@ def gopro_live():
 			urlopen("http://10.5.5.9/camera/PV?t=" + text + "&p=%02")
 			subprocess.Popen("ffplay " + URL, shell=True)
 
+
 def quit_gopro(signal, frame):
 	if RECORD:
 		urlopen("http://10.5.5.9/gp/gpControl/command/shutter?p=0").read()
 	sys.exit(0)
+
 
 def wake_on_lan(macaddress):
 	"""switches on remote computers using WOL. """
@@ -145,11 +149,12 @@ def wake_on_lan(macaddress):
 	#Pad the sync stream
 	data = ''.join(['FFFFFFFFFFFF', macaddress * 20])
 	send_data = bytes.fromhex(data)
-			
+	
 	# Broadcast to lan
 	sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 	sock.sendto(send_data, (GOPRO_IP, 9))
+
 
 if __name__ == '__main__':
 	wake_on_lan(GOPRO_MAC)
