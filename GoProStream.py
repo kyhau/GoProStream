@@ -45,8 +45,8 @@ RECORD=False
 ## Saves the feed to a custom location
 SAVE=False
 SAVE_FILENAME="goprofeed3"
-SAVE_FORMAT="ts"
-SAVE_LOCATION=""
+SAVE_FORMAT = "ts"  # kyhau: tested with ts and mp4
+SAVE_LOCATION = ""  # kyhau: changed to current directory
 ## for wake_on_lan
 GOPRO_IP = '10.5.5.9'
 GOPRO_MAC = 'DEADBEEF0000'
@@ -101,15 +101,22 @@ def gopro_live():
 		if SAVE == False:
 			subprocess.Popen("ffplay " + loglevel_verbose + " -fflags nobuffer -f:v mpegts -probesize 8192 udp://10.5.5.100:8554", shell=True)
 		else:
-			if SAVE_FORMAT=="ts":
-				TS_PARAMS = " -acodec copy -vcodec copy "
+			# kyhau: updated params for outputting ts file
+			if SAVE_FORMAT == "ts":
+				PARAMS = "-fflags nobuffer -f:v mpegts -probesize 8192 -acodec copy -vcodec copy "
+			# kyhau: added params for outputting mp3 file
+			elif SAVE_FORMAT == "mp4":
+				PARAMS = "-vcodec copy "
 			else:
-				TS_PARAMS = ""
+				PARAMS = ""
 			SAVELOCATION = SAVE_LOCATION + SAVE_FILENAME + "." + SAVE_FORMAT
 			print("Recording locally: " + str(SAVE))
 			print("Recording stored in: " + SAVELOCATION)
 			print("Note: Preview is not available when saving the stream.")
-			subprocess.Popen('ffmpeg -i "udp://10.5.5.100:8554" -fflags nobuffer -f:v mpegts -probesize 8192 ' + TS_PARAMS + SAVELOCATION, shell=True)
+
+			# kyhau: updated command line to fix error ('udp://10.5.5.100:8554': Invalid argument')
+			subprocess.Popen('ffmpeg -i "udp://10.5.5.100:8554"  ' + PARAMS + SAVELOCATION, shell=True)
+			
 		if sys.version_info.major >= 3:
 			MESSAGE = bytes(MESSAGE, "utf-8")
 		print("Press ctrl+C to quit this application.\n")
