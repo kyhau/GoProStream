@@ -1,6 +1,8 @@
 # GoProStream
 
-**[kyhau](https://github.com/kyhau): My folk of [KonradIT/GoProStream](https://github.com/KonradIT/GoProStream). See [all changes here](https://github.com/kyhau/GoProStream/pulls?q=is%3Apr+is%3Aclosed).**
+**[kyhau](https://github.com/kyhau)**: My folk of [KonradIT/GoProStream](https://github.com/KonradIT/GoProStream). See [all changes here](https://github.com/kyhau/GoProStream/pulls?q=is%3Apr+is%3Aclosed).
+
+---
 
 Tools for handling/displaying GoPro HTTP/UDP stream. Available in Python.
 
